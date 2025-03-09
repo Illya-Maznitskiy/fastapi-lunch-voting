@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String
-from lunch_voting.database import Base
+from sqlalchemy.orm import relationship
+
+from database import Base
 
 
 class User(Base):
@@ -9,3 +11,5 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     password_hash = Column(String)
+
+    votes = relationship("Vote", back_populates="user")
