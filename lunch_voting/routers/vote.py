@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 # Create a new vote (POST)
-@router.post("/", response_model=VoteBase)
+@router.post("/votes/", response_model=VoteBase)
 def create_vote(vote: VoteCreate, db: Session = Depends(get_db)):
     """
     Create a new vote in the database.
@@ -31,7 +31,7 @@ def create_vote(vote: VoteCreate, db: Session = Depends(get_db)):
 
 
 # Get all votes (GET)
-@router.get("/", response_model=List[VoteBase])
+@router.get("/votes/", response_model=List[VoteBase])
 def get_votes(db: Session = Depends(get_db)):
     """
     Get all votes from the database.
@@ -41,7 +41,7 @@ def get_votes(db: Session = Depends(get_db)):
 
 
 # Get a specific vote by ID (GET)
-@router.get("/{vote_id}", response_model=VoteBase)
+@router.get("/votes/{vote_id}", response_model=VoteBase)
 def get_vote(vote_id: int, db: Session = Depends(get_db)):
     """
     Get a specific vote by its ID.
@@ -52,8 +52,27 @@ def get_vote(vote_id: int, db: Session = Depends(get_db)):
     return db_vote
 
 
+# Update an existing vote (PUT)
+@router.put("/votes/{vote_id}", response_model=VoteBase)
+def update_vote(vote_id: int, vote: VoteCreate, db: Session = Depends(get_db)):
+    """
+    Update an existing vote.
+    """
+    db_vote = db.query(Vote).filter(Vote.id == vote_id).first()
+    if db_vote is None:
+        raise HTTPException(status_code=404, detail="Vote not found")
+
+    db_vote.user_id = vote.user_id
+    db_vote.menu_id = vote.menu_id
+
+    db.commit()
+    db.refresh(db_vote)
+
+    return db_vote
+
+
 # Delete a vote by ID (DELETE)
-@router.delete("/{vote_id}")
+@router.delete("/votes/{vote_id}")
 def delete_vote(vote_id: int, db: Session = Depends(get_db)):
     """
     Delete a vote by its ID.
