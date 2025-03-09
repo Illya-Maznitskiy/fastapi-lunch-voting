@@ -27,6 +27,3 @@ class RestaurantResponse(RestaurantBase):
 
     class Config:
         orm_mode = True
-
-
-# Now, we don't need to call `update_forward_refs()` in this case because the Menu class is already defined above.
