@@ -15,7 +15,7 @@ router = APIRouter()
 
 
 # Create a new user (POST)
-@router.post("/", response_model=UserBase)
+@router.post("/users/", response_model=UserBase)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """
     Create a new user in the database.
@@ -38,7 +38,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 # Get all users (GET) - This should be a protected route
-@router.get("/", response_model=List[UserBase])
+@router.get("/users/", response_model=List[UserBase])
 def get_users(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user),
@@ -51,7 +51,7 @@ def get_users(
 
 
 # Get a specific user by ID (GET) - This should be a protected route
-@router.get("/{user_id}", response_model=UserBase)
+@router.get("/users/{user_id}", response_model=UserBase)
 def get_user(
     user_id: int,
     db: Session = Depends(get_db),
@@ -67,7 +67,7 @@ def get_user(
 
 
 # Update an existing user (PUT) - This should be a protected route
-@router.put("/{user_id}", response_model=UserBase)
+@router.put("/users/{user_id}", response_model=UserBase)
 def update_user(
     user_id: int,
     user_update: UserUpdate,
@@ -96,7 +96,7 @@ def update_user(
 
 
 # Delete a user by ID (DELETE) - This should be a protected route
-@router.delete("/{user_id}")
+@router.delete("/users/{user_id}")
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
@@ -115,7 +115,7 @@ def delete_user(
 
 
 # Login endpoint to generate JWT token (POST)
-@router.post("/login")
+@router.post("/users/login")
 def login(user: UserCreate, db: Session = Depends(get_db)):
     """
     Login and return an access token.
