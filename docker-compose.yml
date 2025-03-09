@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  fastapi-app:
+    build: .
+    container_name: fastapi-app
+    ports:
+      - "8000:8000"   # Expose FastAPI port on localhost:8000
+    volumes:
+      - .:/app         # Mount the current directory to the container for live updates (optional)
+    depends_on:
+      - db             # If you have a database service, specify it here
+
+  db:
+    image: postgres:13  # Use PostgreSQL version 13
+    container_name: db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: fastapi_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data  # Persistent storage for PostgreSQL data
+    ports:
+      - "5432:5432"   # Expose PostgreSQL port for local connections
+
+volumes:
+  postgres-data:
