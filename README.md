@@ -9,6 +9,7 @@ This is a FastAPI-based backend system for an internal employee lunch voting app
 - Python
 - FastAPI
 - PostgreSQL
+- JWT
 - Docker
 
 
@@ -78,16 +79,10 @@ The app will be available at http://localhost:8000.
 
 
 ## API Endpoints
-You can check and test the endpoints with URL [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/)
+You can check and test the endpoints with URL http://127.0.0.1:8000/docs/
 
 
 # Screenshots:
 
-### 1
-![Name](path)
-
-### 2
-![Name](path)
-
-### 3
-![Name](path)
+### FastAPI docs
+![FastAPI docs](screenshots/fastapi_docs.png)
