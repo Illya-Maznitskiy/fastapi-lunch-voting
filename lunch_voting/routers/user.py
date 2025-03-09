@@ -1,9 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from database import get_db
 from models.user import User  # Import the User model
 from schemas.user import UserCreate, UserBase, UserUpdate  # Import the schemas
+from utils.auth import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    get_current_user,
+)  # Import auth functions
 
 router = APIRouter()
 
@@ -21,7 +27,9 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
         )
 
     db_user = User(
-        username=user.username, email=user.email, password=user.password
+        username=user.username,
+        email=user.email,
+        password=hash_password(user.password),
     )
     db.add(db_user)
     db.commit()
@@ -29,9 +37,12 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return db_user
 
 
-# Get all users (GET)
+# Get all users (GET) - This should be a protected route
 @router.get("/", response_model=List[UserBase])
-def get_users(db: Session = Depends(get_db)):
+def get_users(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
     """
     Get all users from the database.
     """
@@ -39,9 +50,13 @@ def get_users(db: Session = Depends(get_db)):
     return users
 
 
-# Get a specific user by ID (GET)
+# Get a specific user by ID (GET) - This should be a protected route
 @router.get("/{user_id}", response_model=UserBase)
-def get_user(user_id: int, db: Session = Depends(get_db)):
+def get_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
     """
     Get a specific user by their ID.
     """
@@ -51,10 +66,13 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-# Update an existing user (PUT)
+# Update an existing user (PUT) - This should be a protected route
 @router.put("/{user_id}", response_model=UserBase)
 def update_user(
-    user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)
+    user_id: int,
+    user_update: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
 ):
     """
     Update an existing user.
@@ -68,18 +86,22 @@ def update_user(
     if user_update.email:
         db_user.email = user_update.email
     if user_update.password:
-        db_user.password = (
+        db_user.password = hash_password(
             user_update.password
-        )  # Note: Don't store plain passwords in real applications
+        )  # Hash the new password
 
     db.commit()
     db.refresh(db_user)
     return db_user
 
 
-# Delete a user by ID (DELETE)
+# Delete a user by ID (DELETE) - This should be a protected route
 @router.delete("/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+def delete_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
     """
     Delete a user by their ID.
     """
@@ -90,3 +112,21 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     db.delete(db_user)
     db.commit()
     return {"message": "User deleted successfully"}
+
+
+# Login endpoint to generate JWT token (POST)
+@router.post("/login")
+def login(user: UserCreate, db: Session = Depends(get_db)):
+    """
+    Login and return an access token.
+    """
+    db_user = db.query(User).filter(User.username == user.username).first()
+    if db_user is None or not verify_password(user.password, db_user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+        )
+
+    # Create JWT token
+    access_token = create_access_token(data={"sub": db_user.username})
+    return {"access_token": access_token, "token_type": "bearer"}
