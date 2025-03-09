@@ -30,12 +30,39 @@ pip install -r requirements.txt
 ```
 
 
-## Run the app
-To run the FastAPI app, use the following command:
+## Database
+Ensure you have PostgreSQL installed
+
+Open the terminal and log into PostgreSQL using the following command:
 ```bash
+psql -U postgres
+```
+
+Create DB with command:
+```bash
+CREATE DATABASE fastapi_lunch_voting_db;
+```
+
+
+## Migrations
+Create and apply migrations with commands:
+```bash
+alembic revision --autogenerate -m "Initial migration"
+alembic upgrade head
+```
+
+
+## Run the app
+- To run the server use the command:
+```bash
+cd lunch_voting
 uvicorn main:app --reload
 ```
 The app will be available at http://localhost:8000.
+
+
+## API Endpoints
+You can check and test the endpoints with URL [http://127.0.0.1:8000/docs/](http://127.0.0.1:8000/docs/)
 
 
 # Screenshots:
