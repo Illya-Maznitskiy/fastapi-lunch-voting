@@ -14,12 +14,12 @@ router = APIRouter()
 
 
 # Create a new restaurant (POST)
-@router.post("/", response_model=RestaurantResponse)
+@router.post("/restaurants/", response_model=RestaurantResponse)
 def create_restaurant(
     restaurant: RestaurantCreate, db: Session = Depends(get_db)
 ):
     """
-    Create a new restaurant in the database
+    Create a new restaurant in the database.
     """
     db_restaurant = Restaurant(
         name=restaurant.name, location=restaurant.location
@@ -31,19 +31,19 @@ def create_restaurant(
 
 
 # Get all restaurants (GET)
-@router.get("/", response_model=List[RestaurantResponse])
+@router.get("/restaurants/", response_model=List[RestaurantResponse])
 def get_restaurants(db: Session = Depends(get_db)):
     """
-    Get all restaurants from the database
+    Get all restaurants from the database.
     """
     return db.query(Restaurant).all()
 
 
 # Get a specific restaurant by ID (GET)
-@router.get("/{restaurant_id}", response_model=RestaurantResponse)
+@router.get("/restaurants/{restaurant_id}", response_model=RestaurantResponse)
 def get_restaurant(restaurant_id: int, db: Session = Depends(get_db)):
     """
-    Get a specific restaurant by its ID
+    Get a specific restaurant by its ID.
     """
     db_restaurant = (
         db.query(Restaurant).filter(Restaurant.id == restaurant_id).first()
@@ -54,14 +54,14 @@ def get_restaurant(restaurant_id: int, db: Session = Depends(get_db)):
 
 
 # Update an existing restaurant (PUT)
-@router.put("/{restaurant_id}", response_model=RestaurantResponse)
+@router.put("/restaurants/{restaurant_id}", response_model=RestaurantResponse)
 def update_restaurant(
     restaurant_id: int,
     restaurant: RestaurantCreate,
     db: Session = Depends(get_db),
 ):
     """
-    Update an existing restaurant
+    Update an existing restaurant.
     """
     db_restaurant = (
         db.query(Restaurant).filter(Restaurant.id == restaurant_id).first()
@@ -77,10 +77,10 @@ def update_restaurant(
 
 
 # Delete a restaurant by ID (DELETE)
-@router.delete("/{restaurant_id}")
+@router.delete("/restaurants/{restaurant_id}")
 def delete_restaurant(restaurant_id: int, db: Session = Depends(get_db)):
     """
-    Delete a restaurant by its ID
+    Delete a restaurant by its ID.
     """
     db_restaurant = (
         db.query(Restaurant).filter(Restaurant.id == restaurant_id).first()
