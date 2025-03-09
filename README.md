@@ -30,6 +30,22 @@ pip install -r requirements.txt
 ```
 
 
+## Testing
+Run the following commands to check code style and execute tests:
+```bash
+flake8
+ ```
+```bash
+cd lunch_voting
+python manage.py test
+ ```
+
+
+## Environment Variables
+Create a `.env` file in the root directory of the project.
+Use the [sample.env](sample.env) file as a reference to add the necessary configurations.
+
+
 ## Database
 Ensure you have PostgreSQL installed
 
